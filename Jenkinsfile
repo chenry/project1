@@ -1,12 +1,4 @@
-node {
-    checkout scm
-    def customImage = docker.build("my-image:${env.BUILD_ID}")
+@Library('jenkins-shared-library-1') _
 
-    customImage.inside {
-        stage('Test') {
-            sh 'node --version'
-            sh 'svn --version'
-        }
-    }
-
-}
+log.info("Starting")
+log.warn("Nothing to do!")
