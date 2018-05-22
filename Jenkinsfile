@@ -1,27 +1,12 @@
-pipeline {
-    agent {
-        docker {
-            image 'maven:3-alpine'
-            args '-v /root/.m2:/root/.m2'
-        }
-    }
-    stages {
-        stage('Build') {
-            steps {
-                sh 'mvn -B -DskipTests clean package'
-            }
-        }
+node {
+
+    def customImage = docker.build("my-image:${env.BUILD_ID}")
+
+    customImage.inside {
         stage('Test') {
-            steps {
-                echo 'Testing..'
-                sh 'mvn -B test'
-                junit '**/target/surefire-reports/*.xml'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying..'
-            }
+            sh 'node --version'
+            sh 'svn --version'
         }
     }
+
 }
