@@ -1,12 +1,20 @@
-pipeline {
-
-    agent { dockerfile true}
-    stages {
+node {
+    checkout scm
+    echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
+    docker.image('maven:3-alpine').inside('-v $HOME/.m2:/root/.m2') {
+        stage('Build') {
+            sh 'mvn -B -DskipTests clean package'
+        }
         stage('Test') {
-            steps {
-                sh 'node --version'
-                sh 'svn --version'
+            try {
+                echo 'Testing..'
+                sh 'mvn -B test'
+            } finally {
+                junit '**/target/surefire-reports/*.xml'
             }
+        }
+        stage('Deploy') {
+            echo 'Deploying..'
         }
     }
 }
